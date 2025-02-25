@@ -143,12 +143,12 @@ router.get('/logout', async (req, res) => {
             return res.json({ success: true, message: "Logout successfully" })
         }
         else {
-            return res.json({ success: false, message: "error" })
+            return res.json({ success: false, message: "Failed to Logout" })
         }
     }
     catch (err) {
         console.log("Trouble in erro to logout", err)
-        return res.json({ response: "notok", message: "Trouble error contact admin" })
+        return res.json({  success: false, message: "Trouble error contact admin" })
     }
 })
 

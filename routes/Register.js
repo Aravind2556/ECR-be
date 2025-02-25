@@ -140,15 +140,15 @@ router.get('/logout', async (req, res) => {
 
         if (req.session.profile) {
             req.session.destroy()
-            return res.json({ success: true, message: "Logout successfully" })
+            return res.send({ success: true, message: "Logout successfully" })
         }
         else {
-            return res.json({ success: false, message: "Failed to Logout" })
+            return res.send({ success: false, message: "Failed to Logout" })
         }
     }
     catch (err) {
         console.log("Trouble in erro to logout", err)
-        return res.json({  success: false, message: "Trouble error contact admin" })
+        return res.send({  success: false, message: "Trouble error contact admin" })
     }
 })
 

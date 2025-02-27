@@ -59,7 +59,6 @@ router.post('/Create-Account', async (req, res) => {
 router.post('/Login-User', async (req, res) => {
     try {
         const { email, password } = req.body
-        console.log("login value", email, password)
 
         const isfindLogin = await Register.findOne({ Email: email })
         if (isfindLogin) {
@@ -91,20 +90,20 @@ router.get('/username', async (req, res) => {
         if (isRegister) {
             const isfindRegister = await Register.findOne({ Email: req.session.profile.Email })
             if (isRegister) {
-                return res.json({ response: "ok", Name: isfindRegister.Name })
+                return res.send({ success: true, Name: isfindRegister.Name })
             }
             else {
-                return res.json({ response: "notok", message: "please login", Name: "profile" })
+                return res.send({ success: false, message: "please login", Name: "profile" })
 
             }
         }
         else {
-            return res.json({ response: "notok", message: "please login", Name: "profile" })
+            return res.send({ success: false, message: "please login", Name: "profile" })
         }
     }
     catch (err) {
         console.log("Trouble error to profileuser", err)
-        return res.json({ response: "notok", message: "Troble error to usrename please contact to admin" })
+        return res.send({ success: false, message: "Troble error to usrename please contact to admin" })
     }
 })
 
@@ -114,21 +113,21 @@ router.get('/checkauth', async (req, res) => {
     try {
         const isValidSession = req.session.profile
         if (isValidSession) {
-            const fetchUser = await Register.findOne({ Email: req.session.profile.Email })
+            const fetchUser = await Register.findOne({ Email: req.session.profile.Email }).select("-Password -_id")
             if (fetchUser) {
-                return res.json({ success: true, user: fetchUser })
+                return res.send({ success: true, user: fetchUser })
             }
             else {
-                return res.json({ success: false, message: "No User Available " })
+                return res.send({ success: false, message: "No User Available " })
             }
         }
         else {
-            return res.json({ success: false, message: "User not logged in" })
+            return res.send({ success: false, message: "User not logged in" })
         }
     }
     catch (err) {
         console.log("Error in checking Authentication: ", err)
-        return res.json({ success: false, message: "Troble in checking Authentication, Please contact developer!" })
+        return res.send({ success: false, message: "Troble in checking Authentication, Please contact developer!" })
     }
 })
 
@@ -139,8 +138,12 @@ router.get('/logout', async (req, res) => {
     try {
 
         if (req.session.profile) {
-            req.session.destroy()
-            return res.send({ success: true, message: "Logout successfully" })
+            req.session.destroy((err)=>{
+                if(err){
+                    return res.send({ success: false, message: "Failed to Logout" })
+                }
+                return res.send({ success: true, message: "Logout successfull" })
+            })
         }
         else {
             return res.send({ success: false, message: "Failed to Logout" })
